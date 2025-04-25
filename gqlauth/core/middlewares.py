@@ -16,6 +16,10 @@ from gqlauth.core.types_ import GQLAuthError, GQLAuthErrors
 from gqlauth.core.utils import USER_UNION, app_settings
 from gqlauth.jwt.types_ import TokenType
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 anon_user = AnonymousUser()
 if TYPE_CHECKING:
     pass
@@ -72,9 +76,15 @@ def channels_jwt_middleware(inner: Callable):
 @sync_and_async_middleware
 def django_jwt_middleware(get_response):
     def logic(request: HttpRequest) -> None:
-        if not hasattr(request, USER_OR_ERROR_KEY):
-            user_or_error: UserOrError = get_user_or_error(request)
-            setattr(request, USER_OR_ERROR_KEY, user_or_error)
+        if hasattr(request, "user") and request.user.is_authenticated:
+            # User is already authenticated
+            return
+
+        user_or_error: UserOrError = get_user_or_error(request)
+        if user_or_error.error:
+            logger.error(user_or_error.error)
+        else:
+            request.user = user_or_error.user
 
     if asyncio.iscoroutinefunction(get_response):
         async_logic = sync_to_async(logic)

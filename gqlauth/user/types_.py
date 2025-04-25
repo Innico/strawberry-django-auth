@@ -46,9 +46,7 @@ class UserStatusType:
 @inject_fields(USER_FIELDS, annotations_only=True)
 class UserFilter:
     logentry_set: auto
-    is_superuser: auto
     last_login: auto
-    is_staff: auto
     is_active: auto
     date_joined: auto
     status: UserStatusFilter
@@ -58,9 +56,7 @@ class UserFilter:
 @inject_fields(USER_FIELDS, annotations_only=True)
 class UserType:
     logentry_set: auto
-    is_superuser: auto
     last_login: auto
-    is_staff: auto
     is_active: auto
     date_joined: auto
     status: UserStatusType

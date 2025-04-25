@@ -17,12 +17,13 @@ from django.http.request import HttpRequest
 from strawberry import ID
 from strawberry.annotation import StrawberryAnnotation
 from strawberry.types.field import StrawberryField
+from django.conf import settings
 
 if TYPE_CHECKING:  # pragma: no cover
     from django.contrib.auth.base_user import AbstractBaseUser
 
     from gqlauth.core.utils import UserProto
-    from gqlauth.jwt.types_ import TokenType
+    from gqlauth.jwt.types_ import TokenType, TokenPayloadType
 
 
 def token_finder(request_or_scope: Union[dict, "HttpRequest"]) -> str | None:
@@ -67,18 +68,24 @@ def create_token_type(user: "AbstractBaseUser") -> "TokenType":
 
 
 def decode_jwt(token: str) -> "TokenType":
-    from gqlauth.core.utils import app_settings
     from gqlauth.jwt.types_ import TokenPayloadType, TokenType
 
-    decoded = json.loads(
-        jwt.decode(
-            token,
-            key=cast(str, app_settings.JWT_SECRET_KEY.value),
-            algorithms=[
-                app_settings.JWT_ALGORITHM,
-            ],
-        )["payload"]
+    decoded = jwt.decode(
+        token,
+        key=settings.GRAPHQL_JWT["JWT_SECRET_KEY"],
+        algorithms=[settings.GRAPHQL_JWT["JWT_ALGORITHM"]],
+        options={
+            "verify_exp": settings.GRAPHQL_JWT["JWT_VERIFY_EXPIRATION"],
+            "verify_signature": settings.GRAPHQL_JWT["JWT_VERIFY"],
+        },
+        leeway=settings.GRAPHQL_JWT["JWT_LEEWAY"],
+        audience=settings.GRAPHQL_JWT["JWT_AUDIENCE"],
+        issuer=settings.GRAPHQL_JWT["JWT_ISSUER"],
     )
+
+    if "otp" in decoded:
+        del decoded["otp"]
+
     return TokenType(token=token, payload=TokenPayloadType.from_dict(decoded))
 
 
