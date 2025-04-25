@@ -83,13 +83,14 @@ class TokenPayloadType:
     @classmethod
     def from_dict(cls, data: dict) -> "TokenPayloadType":
         for field in dataclasses.fields(cls):  # type: ignore
+            if field.name in ["origIat", "exp"]:
+                continue
             value = data[field.name]
             if isinstance(value, str) and field.type is datetime:
                 data[field.name] = datetime.strptime(
                     value, app_settings.JWT_TIME_FORMAT
                 )
-        return cls(**data)
-
+        return cls(email=data["email"])
 
 @strawberry.type(
     description="""
