@@ -69,7 +69,7 @@ def cast_to_status_user(user: USER_UNION) -> UserProto:
 
 
 def get_user_by_email(email: str) -> "UserProto":
-    user = USER_MODEL.objects.get(**{USER_MODEL.EMAIL_FIELD: email})
+    user = USER_MODEL.objects.get(**{"email": email})
     assert hasattr(user, "status")
     return user  # type: ignore
 

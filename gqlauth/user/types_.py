@@ -23,7 +23,7 @@ USER_FIELDS = {
         type_annotation=StrawberryAnnotation(auto),
     ),
     StrawberryField(
-        python_name=USER_MODEL.EMAIL_FIELD,
+        python_name="email",
         default=None,
         type_annotation=StrawberryAnnotation(auto),
     ),

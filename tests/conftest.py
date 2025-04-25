@@ -33,7 +33,7 @@ UserModel = get_user_model()
 WRONG_PASSWORD = "wrong password"
 CC_USERNAME_FIELD = to_camel_case(UserModel.USERNAME_FIELD)
 USERNAME_FIELD = UserModel.USERNAME_FIELD
-EMAIL_FIELD = UserModel.EMAIL_FIELD
+EMAIL_FIELD = "email"
 additional_fields = USERNAME_FIELD, EMAIL_FIELD
 
 fake = faker.Faker()
