@@ -50,8 +50,9 @@ def get_user_or_error(scope_or_request: dict | HttpRequest) -> UserOrError:
         except TokenExpired:
             user_or_error.error = GQLAuthError(code=GQLAuthErrors.EXPIRED_TOKEN)
 
-    else:
-        user_or_error.error = GQLAuthError(code=GQLAuthErrors.MISSING_TOKEN)
+    # We don't need these errors in Sentry
+    # else:
+    #     user_or_error.error = GQLAuthError(code=GQLAuthErrors.MISSING_TOKEN)
 
     return user_or_error
 
@@ -79,6 +80,8 @@ def django_jwt_middleware(get_response):
         if hasattr(request, "user") and request.user.is_authenticated:
             # User is already authenticated
             return
+
+        if
 
         user_or_error: UserOrError = get_user_or_error(request)
         if user_or_error.error:
