@@ -81,8 +81,6 @@ def django_jwt_middleware(get_response):
             # User is already authenticated
             return
 
-        if
-
         user_or_error: UserOrError = get_user_or_error(request)
         if user_or_error.error:
             logger.error(user_or_error.error)
